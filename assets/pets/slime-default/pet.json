@@ -1,0 +1,834 @@
+{
+  "schemaVersion": 1,
+  "id": "slime-default",
+  "name": "Blue Slime",
+  "version": "1.0.0",
+  "movement": {
+    "roam": true,
+    "climb": true,
+    "jump": true
+  },
+  "animations": {
+    "egg/crack": {
+      "file": "egg/crack.png",
+      "frames": 12,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "loop": false
+    },
+    "egg/hatch": {
+      "file": "egg/hatch.png",
+      "frames": 24,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        500
+      ],
+      "loop": false
+    },
+    "slime/idle": {
+      "file": "slime/idle.png",
+      "frames": 4,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        350,
+        350,
+        350,
+        350
+      ],
+      "loop": true
+    },
+    "slime/roam": {
+      "file": "slime/roam.png",
+      "frames": 5,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        150,
+        150,
+        150,
+        150,
+        150
+      ],
+      "loop": true
+    },
+    "slime/edge_look": {
+      "file": "slime/edge_look.png",
+      "frames": 4,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        150,
+        150,
+        150,
+        150
+      ],
+      "loop": false
+    },
+    "slime/climb": {
+      "file": "slime/climb.png",
+      "frames": 6,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        150,
+        150,
+        150,
+        150,
+        150,
+        150
+      ],
+      "loop": true
+    },
+    "slime/pull_up": {
+      "file": "slime/pull_up.png",
+      "frames": 6,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        150,
+        150,
+        150,
+        150,
+        150,
+        150
+      ],
+      "loop": false
+    },
+    "slime/jump": {
+      "file": "slime/jump.png",
+      "frames": 6,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        150,
+        150,
+        150,
+        150,
+        150,
+        150
+      ],
+      "loop": false
+    },
+    "slime/fall": {
+      "file": "slime/fall.png",
+      "frames": 4,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        150,
+        150,
+        150,
+        150
+      ],
+      "loop": true
+    },
+    "slime/land": {
+      "file": "slime/land.png",
+      "frames": 4,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        150,
+        150,
+        150,
+        150
+      ],
+      "loop": false
+    },
+    "slime/cast_earth": {
+      "file": "slime/cast_earth.png",
+      "frames": 13,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140
+      ],
+      "loop": false
+    },
+    "slime/cast_fire": {
+      "file": "slime/cast_fire.png",
+      "frames": 13,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140
+      ],
+      "loop": false
+    },
+    "slime/cast_water": {
+      "file": "slime/cast_water.png",
+      "frames": 13,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140
+      ],
+      "loop": false
+    },
+    "slime/cast_wind": {
+      "file": "slime/cast_wind.png",
+      "frames": 13,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140
+      ],
+      "loop": false
+    },
+    "slime/come_home": {
+      "file": "slime/come_home.png",
+      "frames": 20,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        90,
+        90,
+        90,
+        90,
+        90,
+        90,
+        90,
+        90,
+        90,
+        90,
+        90,
+        90,
+        90,
+        90,
+        90,
+        90,
+        90,
+        90,
+        90,
+        90
+      ],
+      "loop": false
+    },
+    "slime/eat": {
+      "file": "slime/eat.png",
+      "frames": 16,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180
+      ],
+      "loop": false
+    },
+    "slime/listen_music": {
+      "file": "slime/listen_music.png",
+      "frames": 16,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260
+      ],
+      "loop": true
+    },
+    "slime/read": {
+      "file": "slime/read.png",
+      "frames": 18,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260,
+        260
+      ],
+      "loop": true
+    },
+    "slime/sleep_enter": {
+      "file": "slime/sleep_enter.png",
+      "frames": 8,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        300,
+        300,
+        300,
+        300,
+        300,
+        300,
+        300,
+        300
+      ],
+      "loop": false
+    },
+    "slime/wake_up": {
+      "file": "slime/wake_up.png",
+      "frames": 6,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        180,
+        180,
+        180,
+        180,
+        180,
+        180
+      ],
+      "loop": false
+    },
+    "slime/sleep_loop": {
+      "file": "slime/sleep_loop.png",
+      "frames": 2,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        900,
+        900
+      ],
+      "loop": true
+    },
+    "slime/portal_out": {
+      "file": "slime/portal_out.png",
+      "frames": 12,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        90,
+        90,
+        90,
+        90,
+        90,
+        90,
+        90,
+        90,
+        90,
+        90,
+        90,
+        90
+      ],
+      "loop": false
+    },
+    "slime/portal_in": {
+      "file": "slime/portal_in.png",
+      "frames": 8,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        135,
+        135,
+        135,
+        135,
+        135,
+        135,
+        135,
+        135
+      ],
+      "loop": false
+    },
+    "egg/idle": {
+      "file": "egg/idle.png",
+      "frames": 4,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        600,
+        600,
+        600,
+        600
+      ],
+      "loop": true
+    },
+    "egg/shake": {
+      "file": "egg/shake.png",
+      "frames": 6,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        150,
+        150,
+        150,
+        150,
+        150,
+        150
+      ],
+      "loop": true
+    },
+    "slime/idle_variant": {
+      "file": "slime/idle_variant.png",
+      "frames": 8,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        220,
+        220,
+        220,
+        220,
+        220,
+        220,
+        220,
+        220
+      ],
+      "loop": false
+    },
+    "slime/idle_variant_two": {
+      "file": "slime/idle_variant_two.png",
+      "frames": 8,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        220,
+        220,
+        220,
+        220,
+        220,
+        220,
+        220,
+        220
+      ],
+      "loop": false
+    },
+    "slime/edge_jump": {
+      "file": "slime/edge_jump.png",
+      "frames": 8,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        65,
+        65,
+        65,
+        65,
+        65,
+        65,
+        65,
+        65
+      ],
+      "loop": false
+    },
+    "slime/hard_fall": {
+      "file": "slime/hard_fall.png",
+      "frames": 7,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        90,
+        90,
+        90,
+        90,
+        90,
+        90,
+        90
+      ],
+      "loop": false
+    },
+    "slime/hard_land": {
+      "file": "slime/hard_land.png",
+      "frames": 7,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        110,
+        110,
+        110,
+        110,
+        110,
+        110,
+        110
+      ],
+      "loop": false
+    },
+    "slime/cast_arcane": {
+      "file": "slime/cast_arcane.png",
+      "frames": 13,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140,
+        140
+      ],
+      "loop": false
+    },
+    "egg/mana": {
+      "file": "egg/mana.png",
+      "frames": 20,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130,
+        130
+      ],
+      "loop": true
+    },
+    "egg/shake_mana": {
+      "file": "egg/shake_mana.png",
+      "frames": 10,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180,
+        180
+      ],
+      "loop": true
+    },
+    "slime/happy": {
+      "file": "slime/happy.png",
+      "frames": 10,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160,
+        160
+      ],
+      "loop": false
+    }
+  },
+  "fallbacks": {
+    "slime/sleep": "slime/sleep_loop",
+    "slime/sad": "slime/idle",
+    "slime/tired": "slime/idle",
+    "slime/play": "slime/jump",
+    "slime/paint": "slime/read",
+    "slime/write": "slime/read",
+    "slime/social": "slime/listen_music",
+    "slime/meditate": "slime/idle",
+    "slime/exercise": "slime/cast_earth"
+  }
+}

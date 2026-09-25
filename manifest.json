@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "community.omachi-pet",
+  "name": "Omachi Pet",
+  "version": "1.0.0",
+  "author": "Omachi Pet contributors",
+  "license": "MIT AND CC-BY-4.0",
+  "description": "A single-player Egg and Slime companion with attribute levels, XP bars, activity reactions and desktop roaming.",
+  "kinds": [
+    "service",
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "service": "src/Service.qml",
+    "barWidget": "src/PetWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Omachi Pet",
+    "category": "Fun",
+    "allowMultiple": false,
+    "defaultSection": "right"
+  }
+}
