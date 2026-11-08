@@ -61,7 +61,7 @@ ShellRoot {
     Timer {interval:1100;running:scenario==='portal';onTriggered:{check(service.travelPhase==='waiting','STILL WAITING');service.overlaySafe=true;}}
     Timer {interval:1400;running:scenario==='fatigue';onTriggered:check(service.pet.sleeping&&service.reaction==='sleep_enter','AUTO SLEEP')}
     Timer {interval:2100;running:scenario==='fatigue';onTriggered:{check(service.animation==='slime/sleep_enter','SLOW SLEEP ENTRY');var rested=service.copyPet();rested.energy=95;service.pet=rested;service.reaction='';service.tick();check(service.pet.sleeping,'MINIMUM REST');rested=service.copyPet();rested.sleepElapsed=rested.sleepDuration;service.pet=rested;}}
-    Timer {interval:2500;running:scenario==='fatigue';onTriggered:check(!service.pet.sleeping&&service.reaction==='wake_up','AUTO WAKE')}
+    Timer {interval:2500;running:scenario==='fatigue';onTriggered:{service.tick();check(!service.pet.sleeping&&service.reaction==='wake_up','AUTO WAKE');}}
     Timer {interval:1500;running:true;onTriggered:{
         preview.contentItem.grabToImage(function(r){r.saveToFile(Quickshell.env('OMACHI_TEST_OUTPUT')+'/home.png');});
         barPreview.contentItem.grabToImage(function(r){r.saveToFile(Quickshell.env('OMACHI_TEST_OUTPUT')+'/bar.png');});
