@@ -18,10 +18,15 @@ Item {
         animation:root.service?root.service.barAnimation:'egg/idle'
         magnify:true
     }
+    Rectangle {
+        visible:!!root.service&&root.service.needsCare
+        width:7;height:7;radius:4;color:'#e4bb7b';border.color:'#10151b';border.width:1
+        anchors {right:parent.right;top:parent.top;rightMargin:3;topMargin:Math.max(2,(parent.height-root.iconSize)/2)}
+    }
     MouseArea {
         anchors.fill:parent;hoverEnabled:true;cursorShape:Qt.PointingHandCursor
         onClicked:if(root.service)root.service.togglePanel(root.hostWindow&&root.hostWindow.screen?root.hostWindow.screen.name:'')
-        onEntered:if(root.bar&&typeof root.bar.showTooltip==='function')root.bar.showTooltip(root,root.service?(root.service.pet.stage?'Slime':'Egg')+' · '+root.service.statusText:'Pet loading')
+        onEntered:if(root.bar&&typeof root.bar.showTooltip==='function')root.bar.showTooltip(root,root.service?root.service.barTooltip:'Pet loading')
         onExited:if(root.bar&&typeof root.bar.hideTooltip==='function')root.bar.hideTooltip(root)
     }
 }

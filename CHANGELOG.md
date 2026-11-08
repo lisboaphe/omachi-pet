@@ -1,3 +1,15 @@
+# Unreleased (towards v1.1 / v1.2)
+
+- Mood is visible: new Sad and Tired animations, and the bar sprite now shows sleeping, tired or sad states with a small dot when food, energy or happiness runs low. The bar tooltip lists the main stats.
+- A full pet (95%+) refuses food, so feeding can no longer be spammed for affection.
+- App detection matches whole class names, so e.g. `football-manager` no longer counts as the `foot` terminal; the Steam client itself is general use, running games are gaming.
+- Short stalls (under 5 s) no longer count as offline time and reset training progress.
+- Lower CPU use: the controller ticks once a second while nothing is on screen, state copies avoid JSON round trips, the roaming overlay slows down while posing, and Hyprland events are debounced.
+- The final save on shutdown is written synchronously.
+- Installer copies only runtime files (no art sources, docs, tests or `.git`), reads the version from `manifest.json`, names backups by the replaced version and keeps the newest five.
+- Release ZIPs contain only git-tracked files.
+- Escape closes the panel; the displayed version comes from `manifest.json`.
+
 # v1.0.0 — release preparation, 2026-09-25
 
 - Installer offers Left, Middle or Right taskbar placement, preserving the existing position by default on updates. Supports `--section` for noninteractive installs.

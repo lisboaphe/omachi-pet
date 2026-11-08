@@ -1,4 +1,7 @@
 var VERSION=7,HATCH_SECONDS=300,BOOST_LIMIT=240,BOOST_SPEED=10;
+// Keep in sync with Activities.definitions (asserted by tests).
+var ACTIVITY_IDS=['reading','writing','coding','painting','creative_writing','music','music_creation','communication','gaming','exercise','browsing','relaxing','general','idle'];
+var FEED_COOLDOWN=20000,PLAY_COOLDOWN=30000,PET_COOLDOWN=15000,FULL_THRESHOLD=95,PLAY_MIN_ENERGY=5;
 function finite(x,fallback){return typeof x==='number'&&isFinite(x)?x:fallback;}
 function clamp(x,a,b){return Math.max(a,Math.min(b,x));}
 function fresh(now){return {schemaVersion:VERSION,name:'Mochi',nameConfirmed:false,manaCharged:false,stage:0,species:'egg',age:0,phase:'idle',phaseTime:0,hunger:85,happiness:80,energy:90,health:100,affection:0,xp:0,growth:{mind:0,power:0,creativity:0,charisma:0,adventure:0},legacyGrowth:{},activityMappings:{},appCategories:{},activitySeconds:{},sleeping:false,tiredness:0,sleepElapsed:0,sleepDuration:60,activityEnabled:true,lastSaved:now,lastAction:0,lastPet:0,lastPlay:0,lastRecall:0};}
@@ -12,7 +15,7 @@ function restore(raw,now){
  Object.keys(p.growth).forEach(function(k){p.growth[k]=clamp(finite(raw.growth&&raw.growth[k],0),0,1e12);});
  var calm=raw.schemaVersion===5?raw.growth&&raw.growth.calm:raw.legacyGrowth&&raw.legacyGrowth.calm;
  if(finite(calm,0)>0)p.legacyGrowth.calm=calm;
- var ids=['reading','writing','coding','painting','creative_writing','music','music_creation','communication','gaming','exercise','browsing','relaxing','general','idle'];
+ var ids=ACTIVITY_IDS;
  ids.forEach(function(id){if(raw.activityMappings&&Object.keys(p.growth).indexOf(raw.activityMappings[id])>=0)p.activityMappings[id]=raw.activityMappings[id];p.activitySeconds[id]=clamp(finite(raw.activitySeconds&&raw.activitySeconds[id],0),0,1e12);});
  if(raw.appCategories&&typeof raw.appCategories==='object')Object.keys(raw.appCategories).slice(0,100).forEach(function(k){if(k.length<=160&&k!=='__proto__'&&k!=='constructor'&&ids.indexOf(raw.appCategories[k])>=0)p.appCategories[k.toLowerCase()]=raw.appCategories[k];});
  p.sleepElapsed=clamp(finite(raw.sleepElapsed,0),0,28800);p.sleepDuration=clamp(finite(raw.sleepDuration,60),60,900);
@@ -49,9 +52,10 @@ function action(p,name,now){
  if(p.stage===0)return '';
  if(name==='sleep'){p.sleeping=!p.sleeping;if(p.sleeping){p.sleepElapsed=0;p.sleepDuration=60+540*(.7*p.tiredness+.3*(100-p.energy))/100;}return p.sleeping?'sleep_enter':'wake_up';}
  if(p.sleeping)return '';
- if(name==='play'){if(now-p.lastPlay<30000||p.energy<5)return '';p.lastPlay=now;p.happiness=clamp(p.happiness+5,0,100);p.energy=clamp(p.energy-2,0,100);p.affection=clamp(p.affection+.3,0,100);return 'play';}
- if(name==='pet'){if(now-p.lastPet<15000)return '';p.lastPet=now;p.affection=clamp(p.affection+.2,0,100);p.happiness=clamp(p.happiness+1,0,100);return 'happy';}
- if(name!=='feed'||now-p.lastAction<20000)return '';
+ if(name==='play'){if(now-p.lastPlay<PLAY_COOLDOWN||p.energy<PLAY_MIN_ENERGY)return '';p.lastPlay=now;p.happiness=clamp(p.happiness+5,0,100);p.energy=clamp(p.energy-2,0,100);p.affection=clamp(p.affection+.3,0,100);return 'play';}
+ if(name==='pet'){if(now-p.lastPet<PET_COOLDOWN)return '';p.lastPet=now;p.affection=clamp(p.affection+.2,0,100);p.happiness=clamp(p.happiness+1,0,100);return 'happy';}
+ if(name!=='feed'||now-p.lastAction<FEED_COOLDOWN||p.hunger>=FULL_THRESHOLD)return '';
+ // A full pet refuses food, so feed-spamming cannot farm affection.
  p.lastAction=now;p.hunger=clamp(p.hunger+18,0,100);p.affection=clamp(p.affection+.5,0,100);return 'eat';
 }
 

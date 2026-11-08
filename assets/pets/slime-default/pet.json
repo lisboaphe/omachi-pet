@@ -818,12 +818,46 @@
         160
       ],
       "loop": false
+    },
+    "slime/sad": {
+      "file": "slime/sad.png",
+      "frames": 4,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        450,
+        450,
+        450,
+        450
+      ],
+      "loop": true
+    },
+    "slime/tired": {
+      "file": "slime/tired.png",
+      "frames": 4,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        600,
+        600,
+        600,
+        600
+      ],
+      "loop": true
     }
   },
   "fallbacks": {
     "slime/sleep": "slime/sleep_loop",
-    "slime/sad": "slime/idle",
-    "slime/tired": "slime/idle",
     "slime/play": "slime/jump",
     "slime/paint": "slime/read",
     "slime/write": "slime/read",

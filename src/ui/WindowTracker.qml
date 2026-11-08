@@ -15,11 +15,13 @@ QtObject {
         world=World.build(clients,monitor?monitor.lastIpcObject:null,width,height);
     }
     property Timer poll: Timer {
-        interval:500;repeat:true;running:root.active;triggeredOnStart:true
+        interval:1000;repeat:true;running:root.active;triggeredOnStart:true
         onTriggered:{Hyprland.refreshToplevels();Hyprland.refreshMonitors();root.rebuild();}
     }
+    // Bursts of Hyprland events (workspace switch, drag) collapse into one rebuild.
+    property Timer debounce: Timer {interval:50;onTriggered:root.rebuild()}
     property Connections changes: Connections {
         target:Hyprland
-        function onRawEvent(event) {if(root.active)root.rebuild();}
+        function onRawEvent(event) {if(root.active)root.debounce.restart();}
     }
 }

@@ -17,20 +17,29 @@ var definitions={
  idle:{label:'Away from desktop',animation:'idle',growth:{},happiness:0,energy:0,fullness:0}
 };
 function validActivity(id){return Object.prototype.hasOwnProperty.call(definitions,id);}
-function classify(app,rules){
+// Exact Hyprland classes, or whole-word patterns on dot/dash/underscore separated class names.
+// Substring matching misfired (e.g. "foot" in "football-manager", "code" in "decoder").
+var rules=[
+ ['gaming',/^steam_app_\d+$|^gamescope$|^(net\.)?lutris(\.lutris)?$|^heroic$|^minecraft|^org\.prismlauncher|^retroarch$/],
+ ['music_creation',/\b(ardour\d*|audacity|reaper|bitwig[\w-]*|lmms)\b/],
+ ['painting',/\b(krita|gimp|inkscape|blender|figma[\w-]*|aseprite|pinta)\b/],
+ ['writing',/\b(obsidian|libreoffice-writer|logseq|joplin|notion[\w-]*|typora|ghostwriter)\b/],
+ ['reading',/\b(evince|okular|zathura|calibre[\w-]*|foliate|papers)\b/],
+ ['coding',/^(code|code-oss|vscodium|codium|cursor|zed|dev\.zed\.zed|nvim|neovim|godot)$|^jetbrains-|\b(kitty|alacritty|foot|footclient|wezterm|ghostty|terminal)\b/],
+ ['communication',/\b(discord|vesktop|signal|slack|telegram(desktop)?|teams[\w-]*|element)\b/],
+ ['music',/\b(spotify|amberol|rhythmbox|mpv|vlc|music)\b/],
+ ['browsing',/\b(firefox|chromium|google-chrome|chrome|brave(-browser)?|vivaldi(-stable)?|zen(-browser|-alpha|-beta)?|librewolf)\b/]
+];
+function classify(app,rules_){
  app=String(app||'').toLowerCase().slice(0,160);
- if(rules&&Object.prototype.hasOwnProperty.call(rules,app)&&validActivity(rules[app]))return rules[app];
- if(/steam_app_|steam|lutris|heroic|minecraft|gamescope/.test(app))return 'gaming';
- if(/ardour|audacity|reaper|bitwig|lmms/.test(app))return 'music_creation';
- if(/krita|gimp|inkscape|blender|figma/.test(app))return 'painting';
- if(/obsidian|libreoffice-writer|logseq|joplin|notion/.test(app))return 'writing';
- if(/evince|okular|zathura|calibre|foliate/.test(app))return 'reading';
- if(/code|codium|codex|nvim|neovim|jetbrains|zed|godot|kitty|alacritty|foot|terminal|ghostty/.test(app))return 'coding';
- if(/discord|signal|slack|telegram|teams/.test(app))return 'communication';
- if(/spotify|amberol|rhythmbox|mpv|vlc|music/.test(app))return 'music';
- if(/firefox|chromium|chrome|brave|vivaldi|zen-browser/.test(app))return 'browsing';
+ if(rules_&&Object.prototype.hasOwnProperty.call(rules_,app)&&validActivity(rules_[app]))return rules_[app];
+ // Treat dots/underscores as word boundaries (\b already splits on '.' and '-').
+ var words=app.replace(/_/g,' ');
+ for(var i=0;i<rules.length;i++){var r=rules[i][1];if(r.test(app)||r.test(words))return rules[i][0];}
  return 'general';
 }
+var INTENSIVE=['gaming','exercise','painting','music_creation'];
+function intensiveBlocked(energy,id){return energy<=5&&INTENSIVE.indexOf(id)>=0;}
 function detect(app,rules,musicPlaying,idle){
  if(idle)return 'idle';
  var id=classify(app,rules);
@@ -55,7 +64,7 @@ function description(p,id){
 function animation(id,element){return id==='gaming'?'cast_'+['fire','water','wind','earth','arcane'][Math.abs(element||0)%5]:(definitions[id]||definitions.general).animation;}
 function apply(p,id,backgroundMusic){
  if(!p.activityEnabled||p.stage!==1||p.sleeping||id==='idle'||!validActivity(id))return {xp:0,growth:{}};
- if(p.energy<=5&&['gaming','exercise','painting','music_creation'].indexOf(id)>=0)return {xp:0,growth:{}};
+ if(intensiveBlocked(p.energy,id))return {xp:0,growth:{}};
  var d=definitions[id],g=gains(p,id),m=multiplier(p.energy,p.hunger),result={xp:0,growth:{}};
  Object.keys(g).forEach(function(k){var n=g[k]*m;p.growth[k]+=n;result.growth[k]=n;});
  if(Object.keys(g).some(function(k){return g[k]>0;})&&m>0){p.xp+=1;result.xp=1;}

@@ -1,4 +1,4 @@
-# v0.10 architecture
+# Architecture (v1.x)
 
 `Service.qml` mounts a single authoritative `PetController`, plus the native room and roaming windows. The bar looks up only its own service through the Omarchy facade.
 

@@ -28,6 +28,6 @@ Item {
   }
   PetButton {width:parent.width;primary:true;text:'Start our adventure';enabled:input.text.trim().length>0;onClicked:root.submit()}
   Text {width:parent.width;text:root.problem||'You can change the name later in Activities.';color:root.problem?'#f2aa98':'#829da9';font.pixelSize:11;horizontalAlignment:Text.AlignHCenter;wrapMode:Text.Wrap}
-  Text {width:parent.width;text:'v1.0.0';color:'#698390';font.pixelSize:10;horizontalAlignment:Text.AlignHCenter}
+  Text {width:parent.width;text:root.service.version;color:'#698390';font.pixelSize:10;horizontalAlignment:Text.AlignHCenter}
  }
 }

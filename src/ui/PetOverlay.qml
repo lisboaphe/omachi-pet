@@ -20,7 +20,7 @@ PanelWindow {
         if(!tracker)return;
         tracker.rebuild();motion=Movement.create(width,Math.max(0,tracker.world.floor));lastTick=Date.now();
     }
-    Connections {target:root.service;function onRecoverySerialChanged(){root.resetMotion();var m=JSON.parse(JSON.stringify(root.motion));m.x=root.width*.2;m.direction=1;root.motion=m;}}
+    Connections {target:root.service;function onRecoverySerialChanged(){root.resetMotion();var m=Object.assign({},root.motion);m.x=root.width*.2;m.direction=1;root.motion=m;}}
     onVisibleChanged: if(visible)resetMotion()
     onScreenChanged: resetMotion()
     onWidthChanged: if(visible)resetMotion()
@@ -35,11 +35,11 @@ PanelWindow {
         MouseArea {anchors.fill:parent;cursorShape:Qt.PointingHandCursor;onClicked:root.service.panelOpen=true}
     }
     Timer {
-        interval:16;repeat:true;running:root.visible
+        interval:root.posePaused?100:16;repeat:true;running:root.visible
         onTriggered:{
             var now=Date.now(),dt=Math.min(0.05,Math.max(0,(now-root.lastTick)/1000));root.lastTick=now;
             if(tracker.world.blocked){root.service.overlaySafe=true;return;}
-            var m=JSON.parse(JSON.stringify(root.motion));
+            var m=Object.assign({},root.motion);
             Movement.step(m,0,tracker.world);
             var pause=(root.service.travelTarget==='recover'||Director.canPause(m))&&(root.service.reaction!==''||root.service.pet.sleeping||root.service.activityAnimation!=='idle'||root.service.ambient!=='idle');
             Movement.step(m,pause?0:dt,tracker.world);var stuck=Movement.watch(root.motion,m,dt,pause);root.motion=m;if(stuck)root.service.recoverRoaming();root.service.overlaySafe=Director.canPause(m);

@@ -22,3 +22,7 @@ Ten newer source sheets from the referenced chat are retained here and imported 
 ## v0.10 mana, walking and Happy
 
 Four additional original sheets were copied unchanged from the user's New Sprites folders: `EGG_Mana.png`, `EGG_shaking_mana.png`, `Slime_Action_Roaming.png`, and `Slime_Happy.png`. `tools/build_mana_sprites.py` performs the final overrides, records hashes/crops/scales in `crops.json`, and generates mana and Slime contact sheets. Runtime frames retain a common 96×96 canvas and [48,90] anchor. The original mana backgrounds/alpha are handled by the documented crop and alpha threshold; original source bytes remain intact.
+
+## Derived mood sheets
+
+`slime/sad.png` and `slime/tired.png` are generated from the supplied idle sheet by `tools/build_mood_sprites.lua` (Aseprite): worried brows, a sliding tear and a greyer, deflated body for Sad; half-closed lids, a sweat drop and a flatter body for Tired. They reuse the original palette, outline and breathing motion, and no new source art was added.

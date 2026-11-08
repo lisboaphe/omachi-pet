@@ -5,6 +5,8 @@ Rectangle {
  required property var service
  implicitWidth:420;implicitHeight:720
  radius:30;border.color:'#384f5963';border.width:1
+ focus:visible
+ Keys.onEscapePressed:service.panelOpen=false
  color:'transparent'
  Rectangle {anchors.fill:parent;radius:root.radius;opacity:.60;gradient:Gradient {GradientStop {position:0;color:'#10151b'} GradientStop {position:1;color:'#121c24'}}}
  readonly property bool lowMood:service.pet.happiness<35
@@ -58,19 +60,19 @@ Rectangle {
      }
      PetButton {
       x:24;width:parent.width-48;implicitHeight:48;primary:true
-      text:root.service.now-root.service.pet.lastPlay<30000?'Play again in '+Math.ceil((30000-root.service.now+root.service.pet.lastPlay)/1000)+'s':'Play with '+root.service.pet.name
-      enabled:root.canCare&&!root.service.reaction&&root.service.pet.energy>=5&&root.service.now-root.service.pet.lastPlay>=30000
+      text:root.service.playCooldownLeft>0?'Play again in '+Math.ceil(root.service.playCooldownLeft/1000)+'s':'Play with '+root.service.pet.name
+      enabled:root.canCare&&!root.service.reaction&&root.service.canPlay
       onClicked:root.service.act('play')
      }
      Row {
       x:24;width:parent.width-48;spacing:8
-      PetButton {width:(parent.width-16)/3;implicitHeight:36;text:'Feed';enabled:root.canCare&&root.service.now-root.service.pet.lastAction>=20000;onClicked:root.service.act('feed')}
+      PetButton {width:(parent.width-16)/3;implicitHeight:36;text:root.service.isFull?'Full':'Feed';enabled:root.canCare&&root.service.canFeed;onClicked:root.service.act('feed')}
       PetButton {width:(parent.width-16)/3;implicitHeight:36;text:root.service.pet.sleeping?'Wake':'Sleep';enabled:root.service.ready&&root.service.pet.stage===1&&!root.service.travelling;onClicked:root.service.act('sleep')}
       PetButton {width:(parent.width-16)/3;implicitHeight:36;text:root.service.roaming?'Come home':'Explore';enabled:root.canCare;onClicked:root.service.goPlay()}
      }
      Text {
       x:24;width:parent.width-48;horizontalAlignment:Text.AlignHCenter;wrapMode:Text.Wrap;font.pixelSize:11
-      text:root.service.error||(root.service.pet.stage===0?'Hatches in '+Math.max(0,Math.ceil((300-root.service.pet.age)/60))+' min':root.lowMood?'A little play would lift their spirits.':root.service.pet.sleeping?'Resting and recharging.':root.service.trainingLabel==='No attribute training'?'A quiet moment together.':'Growing '+root.service.trainingLabel)
+      text:root.service.error||(root.service.pet.stage===0?'Hatches in '+Math.max(0,Math.ceil(root.service.eggRemaining/60))+' min':root.lowMood?'A little play would lift their spirits.':root.service.pet.sleeping?'Resting and recharging.':root.service.trainingLabel==='No attribute training'?'A quiet moment together.':'Growing '+root.service.trainingLabel)
       color:root.service.error?'#f0a298':root.lowMood?'#d7b786':'#7d939d'
      }
     }
@@ -78,7 +80,7 @@ Rectangle {
    GrowthTab {anchors {fill:parent;leftMargin:24;rightMargin:24} opacity:root.service.pet.stage===1&&root.service.panelTab==='attributes'?1:0;visible:opacity>0;enabled:root.service.panelTab==='attributes';service:root.service;Behavior on opacity {NumberAnimation {duration:180}}}
    ActivityTab {anchors {fill:parent;leftMargin:24;rightMargin:24} opacity:root.service.pet.stage===1&&root.service.panelTab==='activities'?1:0;visible:opacity>0;enabled:root.service.panelTab==='activities';service:root.service;Behavior on opacity {NumberAnimation {duration:180}}}
   }
-  Text {anchors {bottom:parent.bottom;horizontalCenter:parent.horizontalCenter;bottomMargin:root.service.pet.stage===0?24:93} text:'v1.0.0 · '+root.service.saveStatus;color:'#67808b';font.pixelSize:9}
+  Text {anchors {bottom:parent.bottom;horizontalCenter:parent.horizontalCenter;bottomMargin:root.service.pet.stage===0?24:93} text:root.service.version+' · '+root.service.saveStatus;color:'#67808b';font.pixelSize:9}
   Rectangle {
    id:navigation;visible:root.service.pet.stage===1;anchors {left:parent.left;right:parent.right;bottom:parent.bottom;margins:18} height:66;radius:23;color:'#c71d2932';border.color:'#34495760'
    Rectangle {x:6+(navigation.width-12)/3*(root.service.panelTab==='home'?0:root.service.panelTab==='attributes'?1:2);y:6;width:(parent.width-12)/3;height:54;radius:18;color:'#b827443d';border.color:'#426553';Behavior on x {NumberAnimation {duration:220;easing.type:Easing.OutCubic}}}

@@ -22,6 +22,10 @@ Scope {
     property string screenName:''
     property real now:Date.now()
     property real lastTick:Date.now()
+    // Gaps longer than this are suspend/offline time; shorter stalls (GC, load) still count as online.
+    readonly property real offlineGap:5
+    // Tick fast only while something on screen animates from controller state.
+    readonly property bool fastTick:panelOpen||roaming||reaction!==''||travelling||(pet.stage===0&&pet.phase!=='idle')
     property string reaction:''
     property real reactionUntil:0
     property real reactionStarted:0
@@ -36,7 +40,7 @@ Scope {
     readonly property string activityLabel:!pet.activityEnabled?'App reactions paused':pet.sleeping?'Sleeping':Activities.definitions[currentActivity].label
     readonly property string trainingLabel:Activities.description(pet,currentActivity)
     readonly property real growthMultiplier:Activities.multiplier(pet.energy,pet.hunger)
-    readonly property bool intensiveBlocked:pet.energy<=5&&['gaming','exercise','painting','music_creation'].indexOf(currentActivity)>=0
+    readonly property bool intensiveBlocked:Activities.intensiveBlocked(pet.energy,currentActivity)
     readonly property string activityAnimation:{
         if(!pet.activityEnabled||pet.sleeping||intensiveBlocked)return 'idle';
         var id=Activities.animation(currentActivity,magicIndex);
@@ -47,12 +51,20 @@ Scope {
     property real nextAmbient:Date.now()+12000
     property bool eggHovered:false
     readonly property bool eggBoostActive:ready&&!needsName&&panelOpen&&eggHovered&&pet.stage===0&&pet.phase==='idle'&&pet.age<Model.BOOST_LIMIT
+    // Cooldowns come from PetState so the UI can never disagree with the rules.
+    readonly property real playCooldownLeft:Math.max(0,Model.PLAY_COOLDOWN-(now-pet.lastPlay))
+    readonly property bool isFull:pet.hunger>=Model.FULL_THRESHOLD
+    readonly property bool canFeed:now-pet.lastAction>=Model.FEED_COOLDOWN&&!isFull
+    readonly property bool canPlay:playCooldownLeft<=0&&pet.energy>=Model.PLAY_MIN_ENERGY
     readonly property real eggRemaining:Math.max(0,Model.HATCH_SECONDS-pet.age)
     readonly property real eggProgress:Math.min(1,pet.age/Model.HATCH_SECONDS)
     readonly property string animation:pet.stage===0?Model.eggAnimation(pet,eggBoostActive):Director.choose(pet,reaction,activityAnimation,ambient)
     onPanelOpenChanged:if(!panelOpen)eggHovered=false
     readonly property real animationTime:pet.stage===0&&pet.phase!=='idle'?pet.phaseTime:reaction?(now-reactionStarted)/1000:-1
-    readonly property string barAnimation:pet.stage===0?'egg/idle':'slime/idle'
+    // The bar mirrors the pet's mood so care needs are visible without opening the panel.
+    readonly property bool needsCare:pet.stage===1&&!pet.sleeping&&(pet.hunger<25||pet.energy<20||pet.happiness<25)
+    readonly property string barAnimation:pet.stage===0?'egg/idle':pet.sleeping?'slime/sleep_loop':pet.energy<20?'slime/tired':(pet.hunger<20||pet.happiness<25)?'slime/sad':'slime/idle'
+    readonly property string barTooltip:!ready?'Pet loading':pet.stage===0?pet.name+' · Egg · hatches in '+Math.ceil(eggRemaining/60)+' min':pet.name+' · '+statusText+'\nFullness '+Math.round(pet.hunger)+'% · Energy '+Math.round(pet.energy)+'% · Happiness '+Math.round(pet.happiness)+'%'
     property string travelTarget:''
     property string travelPhase:''
     property bool overlaySafe:true
@@ -79,7 +91,12 @@ Scope {
         var p=copyPet();if(!Model.setName(p,value))return false;
         pet=p;lastTick=Date.now();save();return true;
     }
-    function copyPet(){return JSON.parse(JSON.stringify(pet));}
+    // Shallow copy plus the nested maps: much cheaper than a JSON round trip on every tick.
+    function copyPet(){
+        var p={},k;for(k in pet)p[k]=pet[k];
+        ['growth','legacyGrowth','activityMappings','appCategories','activitySeconds'].forEach(function(n){var o={};for(var j in pet[n])o[j]=pet[n][j];p[n]=o;});
+        return p;
+    }
     function duration(id){var a=Pack.resolve(pack,'slime/'+id);return a?a.durations.reduce(function(x,y){return x+y;},0):1000;}
     function playEvent(id){reaction=id;reactionStarted=now;reactionUntil=now+duration(id);}
     function save(){
@@ -137,10 +154,10 @@ Scope {
         }
     }
     function tick(){
-        var stamp=Date.now(),dt=Math.max(0,Math.min(28800,(stamp-lastTick)/1000));lastTick=stamp;now=stamp;
+        var stamp=Date.now(),dt=Math.max(0,Math.min(28800,(stamp-lastTick)/1000)),gap=dt>offlineGap;lastTick=stamp;now=stamp;
         if(!ready||needsName)return;
-        var p=copyPet();if(dt>1){Model.advance(p,dt,false);Model.advance(p,.1,true);activityElapsed=0;}else Model.advance(p,dt,true,desktop.isIdle||currentActivity==='general'||!pet.activityEnabled,eggBoostActive);pet=p;
-        refreshActivity();if(dt<=1)advanceActivity(dt);
+        var p=copyPet();if(gap){Model.advance(p,dt,false);Model.advance(p,.1,true);activityElapsed=0;}else Model.advance(p,dt,true,desktop.isIdle||currentActivity==='general'||!pet.activityEnabled,eggBoostActive);pet=p;
+        refreshActivity();if(!gap)advanceActivity(dt);
         if(reaction&&now>=reactionUntil)finishEvent();
         if(travelPhase==='waiting'&&overlaySafe)beginTravel();
         if(pet.stage===1&&!travelling){
@@ -154,9 +171,13 @@ Scope {
     DesktopActivity {id:activitySource;enabled:root.ready&&root.pet.activityEnabled&&root.desktopSnapshot===null}
     Component.onCompleted:{
         try{pack=Pack.validate(JSON.parse(packFile.text()));}catch(e){error='Sprite pack: '+e;}
+        try{version='v'+JSON.parse(manifestFile.text()).version;}catch(e){version='';}
         prepare.running=true;
     }
-    Component.onDestruction:save()
+    Component.onDestruction:{saveFile.blockWrites=true;save();}
+    // Single source of truth for the displayed version.
+    property string version:''
+    FileView {id:manifestFile;path:Qt.resolvedUrl('../manifest.json');blockLoading:true}
     FileView {id:packFile;path:Qt.resolvedUrl('../assets/pets/slime-default/pet.json');blockLoading:true}
     Process {
         id:prepare;command:['mkdir','-p',root.stateDir]
@@ -181,6 +202,6 @@ Scope {
         onSaved:root.saveStatus='Saved locally'
         onSaveFailed:root.saveStatus='Save failed — check directory permissions'
     }
-    Timer {interval:100;running:true;repeat:true;onTriggered:root.tick()}
+    Timer {interval:root.fastTick?100:1000;running:true;repeat:true;onTriggered:root.tick()}
     Timer {interval:15000;running:root.ready;repeat:true;onTriggered:root.save()}
 }

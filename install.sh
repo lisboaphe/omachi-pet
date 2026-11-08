@@ -6,6 +6,12 @@ plugin_id=community.omachi-pet
 config_root="${XDG_CONFIG_HOME:-$HOME/.config}/omarchy"
 destination="$config_root/plugins/$plugin_id"
 backup_root="${XDG_DATA_HOME:-$HOME/.local/share}/omachi-pet/plugin-backups"
+# Only these paths are needed at runtime; art sources, docs, tests and .git stay out of the plugin folder.
+runtime_paths=(manifest.json src assets LICENSE ARTWORK-LICENSE.md README.md CHANGELOG.md restart-pet-save.sh)
+keep_backups=5
+manifest_version() { sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$1/manifest.json" 2>/dev/null | head -n1 || true; }
+version=$(manifest_version "$source_dir")
+[[ -n "$version" ]] || { echo "Cannot read version from $source_dir/manifest.json" >&2; exit 1; }
 for executable in omarchy omarchy-shell; do
   command -v "$executable" >/dev/null || { echo "Missing $executable. Run this on your Omarchy desktop."; exit 1; }
 done
@@ -82,17 +88,20 @@ cleanup() {
   if [ -d "$staging" ]; then rm -rf -- "$staging"; fi
 }
 trap cleanup EXIT
-cp -a "$source_dir/." "$staging/"
+for path in "${runtime_paths[@]}"; do
+  if [[ -e "$source_dir/$path" ]]; then cp -a "$source_dir/$path" "$staging/"; fi
+done
 omarchy plugin validate "$staging"
 if [ -e "$destination" ]; then
   operation=update
-  echo "Existing Omachi Pet found. Updating to v1.0.0 with a backup..."
+  previous_version=$(manifest_version "$destination")
+  echo "Existing Omachi Pet found. Updating ${previous_version:+v$previous_version }to v$version with a backup..."
   omarchy-shell shell rescanPlugins
   plugin_action disable
-  backup="$backup_root/v0.8-upgrade-$(date +%Y%m%d-%H%M%S)-$$"
+  backup="$backup_root/upgrade-from-v${previous_version:-unknown}-$(date +%Y%m%d-%H%M%S)-$$"
   mv "$destination" "$backup"
 else
-  echo "Omachi Pet is not installed. Installing v1.0.0..."
+  echo "Omachi Pet is not installed. Installing v$version..."
 fi
 replacement_started=true
 mv "$staging" "$destination"
@@ -108,10 +117,13 @@ if ! omarchy restart shell; then
   echo 'Files updated, but shell restart failed. Run: omarchy restart shell' >&2
   exit 1
 fi
+# Keep only the newest upgrade backups; failed-install folders are left for inspection.
+mapfile -t old_backups < <(ls -1dt "$backup_root"/upgrade-from-* 2>/dev/null | tail -n +$((keep_backups + 1)))
+for old in "${old_backups[@]}"; do rm -rf -- "$old"; done
 if [ "$operation" = update ]; then
-  echo 'Omachi Pet updated to v1.0.0. Your existing pet save is preserved.'
+  echo "Omachi Pet updated to v$version. Your existing pet save is preserved."
 else
-  echo 'Omachi Pet v1.0.0 installed. Any existing pet save is preserved.'
+  echo "Omachi Pet v$version installed. Any existing pet save is preserved."
 fi
 if [ -n "$backup" ]; then printf 'Previous plugin: %s\n' "$backup"; fi
-printf 'Click the pet sprite. Check that the panel shows v1.0.0.\n'
+printf 'Click the pet sprite. Check that the panel shows v%s.\n' "$version"

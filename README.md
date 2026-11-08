@@ -39,13 +39,13 @@ This removes the plugin without deleting your pet save at `~/.local/state/omachi
 
 ## Home
 
-- **Feed** replenishes fullness and plays the supplied eating sheet. It has a 20-second cooldown.
+- **Feed** replenishes fullness and plays the supplied eating sheet. It has a 20-second cooldown, and a full pet (95% or more) politely refuses food.
 - **Sleep / Wake** plays the sleep-entry, sleeping-loop and wake-up sheets. Very low energy causes automatic sleep; the pet wakes only after its minimum rest duration and at least 90 energy.
 - **Go explore / Come home** uses the supplied vortex sequence across the room and desktop. Recall waits until a safe surface if the pet is airborne or climbing.
 - **Play** gives 5 happiness and 0.3 affection, costs 2 energy, and has a 30-second cooldown.
 - Clicking the pet gives affection with a 15-second cooldown. The supplied Happy animation plays when petting and after feeding or playing.
 
-The bar shows only the current stage's sprite: Egg before hatching, Slime afterward. Clicking it opens the room. Growth beyond Stage 1 is reserved for a later release.
+The bar shows the current stage's sprite and mood: the Slime sleeps, looks tired or looks sad in the bar too, and a small dot appears when food, energy or happiness runs low. Hover for a quick stat summary; click to open the room, and press Escape to close it. Growth beyond Stage 1 is reserved for a later release.
 
 ## Activities and attributes
 
@@ -57,7 +57,7 @@ Scroll down to **Activity training** and choose a target for each activity. For 
 
 Further down, **Application rules** lets you assign a known or unfamiliar application class to an activity. Type the class, or choose **Use focused app**, then select a category. The selection saves immediately. Choose Automatic to remove a custom rule. Unknown apps have a general reaction and small care effects; they earn no attribute growth until classified. Browser windows default to Browsing, because the plugin does not inspect page titles or contents.
 
-Activity is detected from local application class plus MPRIS playback. Reading/writing/coding use reading poses; playing media uses the music poses; gaming plays a complete spell occasionally, rotating five elements with a pause between casts. Music in the background adds a small happiness bonus during another recognized activity. MPRIS indicates media playback, so video playback may also be treated as music.
+Activity is detected from local application class plus MPRIS playback. Reading/writing/coding use reading poses; playing media uses the music poses; gaming plays a complete spell occasionally, rotating five elements with a pause between casts. Music in the background adds a small happiness bonus during another recognized activity. MPRIS indicates media playback, so video playback may also be treated as music. App classes are matched as whole words (so `football-manager` is not mistaken for the `foot` terminal), and the Steam client itself counts as general use — only running games (`steam_app_*`, gamescope, Lutris, Heroic…) count as gaming.
 
 Rewards require **30 continuous eligible seconds** of an activity. Switching activity, sleep, manual care, travel or inactivity resets that interval. Five minutes without input stops activity growth, even if music continues. Elapsed time while suspended/offline does not earn activity XP. App reactions can be switched off on the Activities tab.
 
@@ -67,7 +67,7 @@ Fullness, Energy, Happiness, Health and Affection are care stats, separate from 
 
 ## Artwork and known limits
 
-Original supplied sheets are preserved under `art/source`; runtime crops, hashes and scales are recorded in `art/crops.json`. The latest import replaces walking with five frames and Happy with ten frames, and adds both mana Egg animations. Some other emotions and activities retain explicit related-pose fallbacks. No new original artwork is claimed.
+Original supplied sheets are preserved under `art/source`; runtime crops, hashes and scales are recorded in `art/crops.json`. The latest import replaces walking with five frames and Happy with ten frames, and adds both mana Egg animations. Sad and Tired sheets are derived from the idle sheet (see `tools/build_mood_sprites.lua`); some other activities retain explicit related-pose fallbacks. No new original artwork is claimed.
 
 Live compositor climbing, fullscreen hiding and mixed-monitor behavior still need verification after installation. Isolated Quickshell tests cover the controller, UI, saves, activities, travel and hatching; they do not replace a live-desktop test.
 
@@ -87,7 +87,7 @@ The Bluetooth idea is to let nearby owners find each other and invite their pets
 
 ## Feedback and contributions
 
-Found a bug or have an idea? Once the public repository is available, open an issue with your plugin version, Omarchy version, what happened and how to reproduce it. Screenshots are helpful; please leave out private information.
+Found a bug or have an idea? [Open an issue](https://github.com/lisboaphe/omachi-pet/issues) with your plugin version, Omarchy version, what happened and how to reproduce it. Screenshots are helpful; please leave out private information.
 
 Code improvements, documentation, animations and gameplay suggestions are welcome. For code changes, run the relevant checks below. For art changes, include the source and make sure you have permission to share it under the project's artwork license.
 
@@ -102,7 +102,7 @@ python3 tests/transparency.py  # requires Pillow
 omarchy plugin validate .
 ```
 
-Rebuild artwork with `python3 tools/build_mana_sprites.py` (requires Pillow); build the ZIP with `python3 tools/package.py`. See [validation](docs/VALIDATION.md), [architecture](docs/ARCHITECTURE.md), [sprite metadata](docs/SPRITE_PACK.md), [security](SECURITY.md), and [art provenance](art/README.md).
+Rebuild artwork with `python3 tools/build_mana_sprites.py` (requires Pillow) and the mood sheets with `aseprite -b --script-param idle=assets/pets/slime-default/slime/idle.png --script-param out=assets/pets/slime-default/slime --script tools/build_mood_sprites.lua`; build the ZIP with `python3 tools/package.py`. See [validation](docs/VALIDATION.md), [architecture](docs/ARCHITECTURE.md), [sprite metadata](docs/SPRITE_PACK.md), [security](SECURITY.md), and [art provenance](art/README.md).
 
 Code and documentation use MIT. Artwork uses [CC BY 4.0](ARTWORK-LICENSE.md), allowing reuse and improvements with credit; the supplied art was created with AI assistance.
 
