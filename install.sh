@@ -47,7 +47,17 @@ if [[ -z "$section" && ! -e "$destination" ]]; then section=right; fi
 omarchy plugin validate "$source_dir"
 mkdir -p "$config_root/plugins" "$backup_root"
 staging=$(mktemp -d "$config_root/.omachi-install.XXXXXX")
-# Registry rescans are asynchronous. Retry only the transient unknown-id error.
+# The shell can be briefly unresponsive right after a plugin is disabled; retry the rescan.
+rescan() {
+  local attempt
+  for ((attempt=0; attempt<20; attempt++)); do
+    if omarchy-shell shell rescanPlugins >/dev/null 2>&1; then return 0; fi
+    sleep 0.5
+  done
+  echo 'omarchy-shell did not respond to a plugin rescan within 10 seconds.' >&2
+  return 1
+}
+# Registry rescans are asynchronous. Retry only transient errors.
 plugin_action() {
   local action="$1" output attempt
   shift
@@ -56,11 +66,12 @@ plugin_action() {
       printf '%s\n' "$output"
       return 0
     fi
-    if [[ "$output" != *"is not known"* ]]; then
+    # Retry the asynchronous registry ("is not known") and a shell that is still reloading ("not responding").
+    if [[ "$output" != *"is not known"* && "$output" != *"not responding"* ]]; then
       printf '%s\n' "$output" >&2
       return 1
     fi
-    omarchy-shell shell rescanPlugins || return 1
+    rescan || return 1
     sleep 0.25
   done
   printf '%s\n' "$output" >&2
@@ -76,7 +87,7 @@ cleanup() {
     if [ -d "$destination" ]; then mv "$destination" "$backup_root/failed-$(date +%Y%m%d-%H%M%S)-$$"; fi
     if [ -n "$backup" ] && [ -d "$backup" ]; then
       mv "$backup" "$destination"
-      omarchy-shell shell rescanPlugins || true
+      rescan || true
       plugin_action enable || true
     fi
     if [ -n "$backup" ]; then
@@ -96,7 +107,7 @@ if [ -e "$destination" ]; then
   operation=update
   previous_version=$(manifest_version "$destination")
   echo "Existing Omachi Pet found. Updating ${previous_version:+v$previous_version }to v$version with a backup..."
-  omarchy-shell shell rescanPlugins
+  rescan
   plugin_action disable
   backup="$backup_root/upgrade-from-v${previous_version:-unknown}-$(date +%Y%m%d-%H%M%S)-$$"
   mv "$destination" "$backup"
@@ -105,7 +116,7 @@ else
 fi
 replacement_started=true
 mv "$staging" "$destination"
-omarchy-shell shell rescanPlugins
+rescan
 if [[ -n "$section" ]]; then
   plugin_action enable --section "$section"
 else

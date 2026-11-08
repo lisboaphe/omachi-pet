@@ -13,6 +13,7 @@ Item {
     implicitWidth:iconSize+8
     implicitHeight:bar?bar.barSize:32
     AnimatedPet {
+        id:sprite
         anchors.centerIn:parent;width:root.iconSize;height:root.iconSize
         pack:root.service?root.service.pack:null
         animation:root.service?root.service.barAnimation:'egg/idle'
@@ -21,7 +22,8 @@ Item {
     Rectangle {
         visible:!!root.service&&root.service.needsCare
         width:7;height:7;radius:4;color:'#e4bb7b';border.color:'#10151b';border.width:1
-        anchors {right:parent.right;top:parent.top;rightMargin:3;topMargin:Math.max(2,(parent.height-root.iconSize)/2)}
+        // Sits by the Slime's head; the magnified sprite leaves empty space above it.
+        anchors {right:sprite.right;top:sprite.top;rightMargin:Math.round(root.iconSize*.12);topMargin:Math.round(root.iconSize*.3)}
     }
     MouseArea {
         anchors.fill:parent;hoverEnabled:true;cursorShape:Qt.PointingHandCursor
