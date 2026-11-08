@@ -854,15 +854,57 @@
         600
       ],
       "loop": true
+    },
+    "slime/play": {
+      "file": "slime/play.png",
+      "frames": 8,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        110,
+        110,
+        110,
+        110,
+        110,
+        110,
+        110,
+        110
+      ],
+      "loop": false
+    },
+    "slime/meditate": {
+      "file": "slime/meditate.png",
+      "frames": 8,
+      "rows": 1,
+      "frameWidth": 96,
+      "frameHeight": 96,
+      "anchor": [
+        48,
+        90
+      ],
+      "durations": [
+        250,
+        250,
+        250,
+        250,
+        250,
+        250,
+        250,
+        250
+      ],
+      "loop": true
     }
   },
   "fallbacks": {
     "slime/sleep": "slime/sleep_loop",
-    "slime/play": "slime/jump",
     "slime/paint": "slime/read",
     "slime/write": "slime/read",
     "slime/social": "slime/listen_music",
-    "slime/meditate": "slime/idle",
     "slime/exercise": "slime/cast_earth"
   }
 }

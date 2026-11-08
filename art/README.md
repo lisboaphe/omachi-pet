@@ -26,3 +26,5 @@ Four additional original sheets were copied unchanged from the user's New Sprite
 ## Derived mood sheets
 
 `slime/sad.png` and `slime/tired.png` are generated from the supplied idle sheet by `tools/build_mood_sprites.lua` (Aseprite): worried brows, a sliding tear and a greyer, deflated body for Sad; half-closed lids, a sweat drop and a flatter body for Tired. They reuse the original palette, outline and breathing motion, and no new source art was added.
+
+`slime/play.png` (hop with a bouncing ball) and `slime/meditate.png` (eyes closed, floating, aura and sparkles) are built from the front-facing idle variant by `tools/build_extra_sprites.lua`.
